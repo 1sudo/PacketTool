@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
@@ -16,10 +17,12 @@ namespace PacketTool.Models;
 public class MainWindowModel
 {
     public MainWindowViewModel ViewModel { get; }
-    
+    public static Action<TreeViewItem> OnNodeClicked;
+
     public MainWindowModel(MainWindowViewModel viewModel)
     {
         ViewModel = viewModel;
+        OnNodeClicked += NodeClicked;
     }
     
     internal Settings? settings = new();
@@ -254,5 +257,30 @@ public class MainWindowModel
         {
             MessageBox.Show("Error!",ex2.Message);
         }
+    }
+
+    private void NodeClicked(TreeViewItem node)
+    {
+        ViewModel.PacketViewText = "";
+        ViewModel.BreakDownViewText = "";
+        IPacketNode packetNode = (IPacketNode)node;
+        selectedNode = packetNode;
+
+        if (packetNode == null) return;
+
+        StringBuilder packetViewSb = new();
+        foreach (var line in packetNode.GetDisplayView())
+        {
+            packetViewSb.AppendLine(line);
+        }
+
+        StringBuilder breakDownViewSb = new();
+        foreach (var line in packetNode.GetPacketBreakdown())
+        {
+            breakDownViewSb.AppendLine(line);
+        }
+
+        ViewModel.PacketViewText = packetViewSb.ToString();
+        ViewModel.BreakDownViewText = breakDownViewSb.ToString();
     }
 }
