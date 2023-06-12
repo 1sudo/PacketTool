@@ -15,107 +15,126 @@
     </Window.DataContext>
     -->
 
-    <DockPanel>
-        <StackPanel>
-            <Menu>
-                <MenuItem Header="_File">
-                    <MenuItem Command="{Binding ToolStripMenuOpenButton}" IsEnabled="{Binding OpenToolStripMenuItemEnabled}" Header="_Open Dump"/>
-                    <Separator/>
-                    <MenuItem Command="{Binding ToolStripMenuSaveButton}" Header="_Save Dump As"/>
-                    <Separator/>
-                    <MenuItem Command="{Binding ToolStripMenuExitButton}" Header="_Exit"/>
-                </MenuItem>
-                <MenuItem Header="_Tools">
-                    <MenuItem Header="_Update"/>
-                    <MenuItem Header="_Options"/>
-                </MenuItem>
-                <MenuItem Header="_Help">
-                    <MenuItem Header="_About..."/>
-                </MenuItem>
-            </Menu>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <StackPanel Margin="10 0">
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                    <Label Content="Interface" VerticalAlignment="Center" Margin="0 0 10 0" />
-                    <ComboBox IsEnabled="{Binding InterfaceBoxEnabled}" SelectedIndex="{Binding AvailableInterfacesIndex}" ItemsSource="{Binding AvailableInterfaces}" Width="348" VerticalAlignment="Top" Margin="0 0 10 0" />
-                    <Button Content="{Binding StartCaptureButtonText}" Command="{Binding StartCaptureButton}" VerticalAlignment="Center" Margin="0 0 10 0" />
-                    <Button Content="{Binding ResumeButtonText}" IsEnabled="{Binding ResumeButtonEnabled}" Command="{Binding ResumeButton}" VerticalAlignment="Top" Margin="0 0 10 0" />
-                    <Button Command="{Binding ClearButton}" IsEnabled="{Binding ClearButtonEnabled}" Content="Clear" VerticalAlignment="Top" Margin="0 0 10 0" />
-                    <TextBlock VerticalAlignment="Center">Version 62</TextBlock>
-                </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                    <CheckBox Content="Scroll Packets" IsChecked="True"  VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <Label Content="Game Server Address" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <TextBox Text="{Binding GameServerAddress}" VerticalAlignment="Top" Width="127" Margin="0 0 10 0"/>
-                    <Label Content="Session Key" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <TextBox Text="{Binding SessionKey}" IsReadOnly="True"  VerticalAlignment="Center" Width="127" Margin="0 0 10 0"/>
-                    <Label Content="Login" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <TextBox Text="{Binding LoginPortText}" Width="42" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <Label Content="Zone" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <TextBox Text="{Binding ZonePortText}" Width="42" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <Label Content="Ping" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <TextBox Text="{Binding PingPortText}" Width="42" VerticalAlignment="Center" />
-                </StackPanel>
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <MenuItem Header="_File">
+                <MenuItem Command="{Binding ToolStripMenuOpenButton}" IsEnabled="{Binding OpenToolStripMenuItemEnabled}" Header="_Open Dump"/>
+                <Separator/>
+                <MenuItem Command="{Binding ToolStripMenuSaveButton}" Header="_Save Dump As"/>
+                <Separator/>
+                <MenuItem Command="{Binding ToolStripMenuExitButton}" Header="_Exit"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Update"/>
+                <MenuItem Header="_Options"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About..."/>
+            </MenuItem>
+        </Menu>
 
-                <Grid VerticalAlignment="Stretch">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label Content="Interface" VerticalAlignment="Center" Margin="0 0 10 0" />
+            <ComboBox IsEnabled="{Binding InterfaceBoxEnabled}" SelectedIndex="{Binding AvailableInterfacesIndex}" ItemsSource="{Binding AvailableInterfaces}" Width="348" VerticalAlignment="Top" Margin="0 0 10 0" />
+            <Button Content="{Binding StartCaptureButtonText}" Command="{Binding StartCaptureButton}" VerticalAlignment="Center" Margin="0 0 10 0" />
+            <Button Content="{Binding ResumeButtonText}" IsEnabled="{Binding ResumeButtonEnabled}" Command="{Binding ResumeButton}" VerticalAlignment="Top" Margin="0 0 10 0" />
+            <Button Command="{Binding ClearButton}" IsEnabled="{Binding ClearButtonEnabled}" Content="Clear" VerticalAlignment="Top" Margin="0 0 10 0" />
+            <TextBlock VerticalAlignment="Center">Version 62</TextBlock>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <CheckBox Content="Scroll Packets" IsChecked="True"  VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <Label Content="Game Server Address" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <TextBox Text="{Binding GameServerAddress}" VerticalAlignment="Top" Width="127" Margin="0 0 10 0"/>
+            <Label Content="Session Key" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <TextBox Text="{Binding SessionKey}" IsReadOnly="True"  VerticalAlignment="Center" Width="127" Margin="0 0 10 0"/>
+            <Label Content="Login" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <TextBox Text="{Binding LoginPortText}" Width="42" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <Label Content="Zone" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <TextBox Text="{Binding ZonePortText}" Width="42" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <Label Content="Ping" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            <TextBox Text="{Binding PingPortText}" Width="42" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <TabControl Grid.Column="0" VerticalAlignment="Top" Grid.Row="3">
+            <TabItem FontSize="14" Header="Breakdown">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TabControl Grid.Column="0" VerticalAlignment="Top">
-                        <TabItem FontSize="14" Header="Breakdown">
-                            <StackPanel>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="auto" />
-                                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                                    <TextBox Grid.Column="0" VerticalAlignment="Top" />
-                                    <Button Grid.Column="1" Content="Find" VerticalAlignment="Top" />
-                                    <Button Grid.Column="2" Content="Filter OFF" Foreground="Red" VerticalAlignment="Top" />
-                                </Grid>
-
-                                <ScrollViewer VerticalContentAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <!--<TextBox VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" FontFamily="Courier New" FontSize="9" IsReadOnly="True"/>-->
-                                    <TreeView ItemsSource="{Binding BreakdownTreeViewItems}" FontFamily="Courier New" FontSize="5" VerticalAlignment="Top" />
-                                </ScrollViewer>
-                            </StackPanel>
-                        </TabItem>
-                        <TabItem FontSize="14" Header="Master">
-                            <ScrollViewer>
-                                <TreeView ItemsSource="{Binding MasterTreeViewItems}" FontFamily="Courier New" FontSize="8.25"/>
-                            </ScrollViewer>
-                        </TabItem>
-                        <TabItem FontSize="14" Header="Process Errors">
-                            <ScrollViewer>
-                                <TreeView ItemsSource="{Binding ErrorTreeViewItems}" FontFamily="Courier New" FontSize="8.25"/>
-                            </ScrollViewer>
-                        </TabItem>
-                        <TabItem FontSize="14" Header="Objects">
-                            <ScrollViewer>
-                                <TextBox FontFamily="Courier New" FontSize="9" IsReadOnly="True"/>
-                            </ScrollViewer>
-                        </TabItem>
-                    </TabControl>
-
-                    <TabControl Grid.Column="1" VerticalAlignment="Top">
-                        <TabItem FontSize="14" Header="Packet">
-                            <DockPanel LastChildFill="True">
-                                <TextBox Text="{Binding PacketViewText}" FontFamily="Courier New" FontSize="14" IsReadOnly="True" />
-                            </DockPanel>
-                        </TabItem>
-                        <TabItem FontSize="14" Header="Breakdown">
-                            <ScrollViewer>
-                                <TextBox Text="{Binding BreakDownViewText}" FontFamily="Courier New" FontSize="9" IsReadOnly="True"/>
-                            </ScrollViewer>
-                        </TabItem>
-                    </TabControl>
+                    <TextBox Grid.Column="0" Grid.Row="0" VerticalAlignment="Top" />
+                    <Button Grid.Column="1" Grid.Row="0" Content="Find" VerticalAlignment="Top" />
+                    <Button Grid.Column="2" Grid.Row="0" Content="Filter OFF" Foreground="Red" VerticalAlignment="Top" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                        <TreeView ItemsSource="{Binding BreakdownTreeViewItems}" FontFamily="Courier New" FontSize="12" />
+                    </ScrollViewer>
                 </Grid>
-            </StackPanel>
-        </StackPanel>
-    </DockPanel>
+            </TabItem>
+            <TabItem FontSize="14" Header="Master">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
+                        <TreeView ItemsSource="{Binding MasterTreeViewItems}" FontFamily="Courier New" FontSize="8.25"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem FontSize="14" Header="Process Errors">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
+                        <TreeView ItemsSource="{Binding ErrorTreeViewItems}" FontFamily="Courier New" FontSize="8.25"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem FontSize="14" Header="Objects">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
+                        <TextBox FontFamily="Courier New" FontSize="9" IsReadOnly="True"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <TabControl Grid.Column="1" VerticalAlignment="Top" Grid.Row="3">
+            <TabItem FontSize="14" Header="Packet">
+                <TextBox Text="{Binding PacketViewText}" FontFamily="Courier New" FontSize="14" IsReadOnly="True" />
+            </TabItem>
+            <TabItem FontSize="14" Header="Breakdown">
+                <ScrollViewer>
+                    <TextBox Text="{Binding BreakDownViewText}" FontFamily="Courier New" FontSize="9" IsReadOnly="True"/>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
 </Window>

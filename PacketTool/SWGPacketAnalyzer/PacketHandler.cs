@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.Win32;
 using PacketDotNet;
 using PacketTool.Models;
@@ -135,145 +134,134 @@ namespace SwgPacketAnalyzer
 
 		private void processPacket(PcapDevice device, Packet packet)
 		{
-            try
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-                SoePacket soepacket = this.CreateNewSOEPacket(packet, false, true);
-				if (soepacket is ErrorPacket)
-				{
-                    Trace.WriteLine("In if");
-                    if (this.LoggingEnabled)
-					{
-						model.UpdateErrorView(new ErrorPacketTreeNode((ErrorPacket)soepacket), this.onlineCapture);
-					}
-				}
-				else
-				{
-                    Trace.WriteLine("In else");
-                    if (soepacket is SessionRequest)
-					{
-						Trace.WriteLine("hit1");
-						Trace.WriteLine("Is session request");
-						this.handleSessionRequest(device, soepacket);
-					}
-					if (soepacket is SessionResponse)
-					{
-                        Trace.WriteLine("hit2");
-                        Trace.WriteLine("Is session response");
-                        this.handleSessionResponse(soepacket);
-					}
-					if (soepacket is SessionRequest || soepacket is SessionResponse || this.sessionEstablished || PacketHandler.settings.SWGKey == 0U)
-					{
-                        Trace.WriteLine("hit3");
-                        if (this.LoggingEnabled)
-						{
-                            Trace.WriteLine("hit4");
-                            this.addToCompleteTreenode(soepacket);
-							foreach (SoePacket spacket in soepacket.SOEPacketList)
-							{
-                                Trace.WriteLine("hit5");
-                                this.packetQueues.addPacket(spacket);
-							}
-							if (soepacket.SOEPacketList.Count == 0)
-							{
-                                Trace.WriteLine("hit6");
-                                this.packetQueues.addPacket(soepacket);
-							}
-                            Trace.WriteLine("hit7");
-                            lock (this.packetQueues)
-							{
-                                Trace.WriteLine("hit8");
-                                foreach (PacketQueue packetQueue in this.packetQueues.getQueues())
-								{
-                                    Trace.WriteLine("hit9");
-                                    while (packetQueue.Count > 0)
-									{
-                                        Trace.WriteLine("hit10");
-                                        this.HandleGamePacket(device, packetQueue);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-                MessageBox.Show(string.Concat(new object[]
+                try
                 {
+                    SoePacket soepacket = this.CreateNewSOEPacket(packet, false, true);
+                    if (soepacket is ErrorPacket)
+                    {
+                        if (this.LoggingEnabled)
+                        {
+                            model.UpdateErrorView(new ErrorPacketTreeNode((ErrorPacket)soepacket), this.onlineCapture);
+                        }
+                    }
+                    else
+                    {
+                        if (soepacket is SessionRequest)
+                        {
+                            this.handleSessionRequest(device, soepacket);
+                        }
+                        if (soepacket is SessionResponse)
+                        {
+                            this.handleSessionResponse(soepacket);
+                        }
+                        if (soepacket is SessionRequest || soepacket is SessionResponse || this.sessionEstablished || PacketHandler.settings.SWGKey == 0U)
+                        {
+                            if (this.LoggingEnabled)
+                            {
+                                this.addToCompleteTreenode(soepacket);
+                                foreach (SoePacket spacket in soepacket.SOEPacketList)
+                                {
+                                    this.packetQueues.addPacket(spacket);
+                                }
+                                if (soepacket.SOEPacketList.Count == 0)
+                                {
+                                    this.packetQueues.addPacket(soepacket);
+                                }
+                                lock (this.packetQueues)
+                                {
+                                    foreach (PacketQueue packetQueue in this.packetQueues.getQueues())
+                                    {
+                                        while (packetQueue.Count > 0)
+                                        {
+                                            this.HandleGamePacket(device, packetQueue);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Concat(new object[]
+                    {
                     "Error in processPacket, packet ",
                     this.packetNumber,
                     ": ",
                     ex.Message,
                     "\n",
                     ex.StackTrace
-                }), "Error!");
-			}
+                    }), "Error!");
+                }
+            });
 
-			Trace.WriteLine("hit11");
 		}
 
 		private void processOfflinePacket(PcapDevice device, Packet packet)
 		{
-			try
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-				SoePacket soepacket = this.CreateNewSOEPacket(packet, false, true);
-				if (soepacket is ErrorPacket && this.LoggingEnabled)
-				{
-					this.ErrorPacketNodes.Add(new ErrorPacketTreeNode((ErrorPacket)soepacket));
-				}
-				if (soepacket is SessionRequest)
-				{
-					this.handleSessionRequest(device, soepacket);
-				}
-				if (soepacket is SessionResponse)
-				{
-					this.handleSessionResponse(soepacket);
-				}
-				if (soepacket is SessionRequest || soepacket is SessionResponse || this.sessionEstablished || PacketHandler.settings.SWGKey == 0U)
-				{
-					if (this.LoggingEnabled)
-					{
-						this.addToCompleteTreenodeOffline(soepacket);
-						foreach (SoePacket spacket in soepacket.SOEPacketList)
-						{
-							this.packetQueues.addPacket(spacket);
-						}
-						if (soepacket.SOEPacketList.Count == 0)
-						{
-							this.packetQueues.addPacket(soepacket);
-						}
-						lock (this.packetQueues)
-						{
-							foreach (PacketQueue packetQueue in this.packetQueues.getQueues())
-							{
-								while (packetQueue.Count > 0)
-								{
-									this.HandleGamePacketOffline(device, packetQueue);
-								}
-							}
-						}
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-                MessageBox.Show("Error!", string.Concat(new object[]
-				{
-					"Error in processPacket, packet ",
-					this.packetNumber,
-					": ",
-					ex.Message,
-					"\n",
-					ex.StackTrace
-				}));
-			}
+                try
+                {
+                    SoePacket soepacket = this.CreateNewSOEPacket(packet, false, true);
+                    if (soepacket is ErrorPacket && this.LoggingEnabled)
+                    {
+                        this.ErrorPacketNodes.Add(new ErrorPacketTreeNode((ErrorPacket)soepacket));
+                    }
+                    if (soepacket is SessionRequest)
+                    {
+                        this.handleSessionRequest(device, soepacket);
+                    }
+                    if (soepacket is SessionResponse)
+                    {
+                        this.handleSessionResponse(soepacket);
+                    }
+                    if (soepacket is SessionRequest || soepacket is SessionResponse || this.sessionEstablished || PacketHandler.settings.SWGKey == 0U)
+                    {
+                        if (this.LoggingEnabled)
+                        {
+                            this.addToCompleteTreenodeOffline(soepacket);
+                            foreach (SoePacket spacket in soepacket.SOEPacketList)
+                            {
+                                this.packetQueues.addPacket(spacket);
+                            }
+                            if (soepacket.SOEPacketList.Count == 0)
+                            {
+                                this.packetQueues.addPacket(soepacket);
+                            }
+                            lock (this.packetQueues)
+                            {
+                                foreach (PacketQueue packetQueue in this.packetQueues.getQueues())
+                                {
+                                    while (packetQueue.Count > 0)
+                                    {
+                                        this.HandleGamePacketOffline(device, packetQueue);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error!", string.Concat(new object[]
+                    {
+                    "Error in processPacket, packet ",
+                    this.packetNumber,
+                    ": ",
+                    ex.Message,
+                    "\n",
+                    ex.StackTrace
+                    }));
+                }
+            });
 		}
 
 		private void handleSessionRequest(PcapDevice device, SoePacket soePacket)
 		{
 			PacketHandler.settings.ServerAddress = soePacket.getDestinationAddress();
-
-			Trace.WriteLine(soePacket.getDestinationAddress());
 
 			if (PacketHandler.settings.ServerAddress.StartsWith("199.108"))
 			{
@@ -422,24 +410,30 @@ namespace SwgPacketAnalyzer
 
 		private void HandleGamePacket(PcapDevice device, PacketQueue queue)
 		{
-			SwgPacket swgpacket = queue[0];
-			if (this.LoggingEnabled && !this.isFiltered(swgpacket))
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-				SwgPacketTreeNode newNode = new SwgPacketTreeNode(swgpacket, false);
-				model.UpdateBreakdownList(newNode, this.onlineCapture);
-			}
-			queue.Remove(swgpacket);
+                SwgPacket swgpacket = queue[0];
+                if (this.LoggingEnabled && !this.isFiltered(swgpacket))
+                {
+                    SwgPacketTreeNode newNode = new SwgPacketTreeNode(swgpacket, false);
+                    model.UpdateBreakdownList(newNode, this.onlineCapture);
+                }
+                queue.Remove(swgpacket);
+            });
 		}
 
 		private void HandleGamePacketOffline(PcapDevice device, PacketQueue queue)
 		{
-			SwgPacket swgpacket = queue[0];
-			if (this.LoggingEnabled && !this.isFiltered(swgpacket))
-			{
-				SwgPacketTreeNode item = new SwgPacketTreeNode(swgpacket, false);
-				this.SWGPacketNodes.Add(item);
-			}
-			queue.Remove(swgpacket);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                SwgPacket swgpacket = queue[0];
+                if (this.LoggingEnabled && !this.isFiltered(swgpacket))
+                {
+                    SwgPacketTreeNode item = new SwgPacketTreeNode(swgpacket, false);
+                    this.SWGPacketNodes.Add(item);
+                }
+                queue.Remove(swgpacket);
+            });
 		}
 
 		private bool isFiltered(SwgPacket gamePacket)
@@ -451,35 +445,34 @@ namespace SwgPacketAnalyzer
 
 		private void addToCompleteTreenode(SoePacket soePacket)
 		{
-			Trace.WriteLine("add 1");
-			this.CompleteList.Add(soePacket);
-            Trace.WriteLine("add 2");
-            bool flag = false;
-			while (this.CompleteList.Count > PacketHandler.maxListSize)
-			{
-                Trace.WriteLine("add 3");
-                this.packetQueues.remove(this.CompleteList[0]);
-				this.CompleteList.RemoveAt(0);
-				flag = true;
-			}
-            Trace.WriteLine("add 4");
-            if (flag)
-			{
-                Trace.WriteLine("add 5");
-                GC.Collect();
-			}
-            Trace.WriteLine("add 6");
-            SoePacketTreeNode newNode = new(soePacket);
-            Trace.WriteLine("add 7");
-            model.UpdateMasterPacketList(newNode, this.onlineCapture);
-            Trace.WriteLine("add 8");
+			Application.Current.Dispatcher.Invoke(() => {
+                this.CompleteList.Add(soePacket);
+                bool flag = false;
+                while (this.CompleteList.Count > PacketHandler.maxListSize)
+                {
+                    this.packetQueues.remove(this.CompleteList[0]);
+                    this.CompleteList.RemoveAt(0);
+                    flag = true;
+                }
+                if (flag)
+                {
+                    GC.Collect();
+                }
+                SoePacketTreeNode newNode = new(soePacket);
+				newNode.VerticalContentAlignment = VerticalAlignment.Center;
+				newNode.HorizontalContentAlignment = HorizontalAlignment.Center;
+                model.UpdateMasterPacketList(newNode, this.onlineCapture);
+            });
         }
 
 		private void addToCompleteTreenodeOffline(SoePacket soePacket)
 		{
-			this.CompleteList.Add(soePacket);
-			SoePacketTreeNode item = new SoePacketTreeNode(soePacket);
-			this.SOEPacketNodes.Add(item);
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+                this.CompleteList.Add(soePacket);
+                SoePacketTreeNode item = new SoePacketTreeNode(soePacket);
+                this.SOEPacketNodes.Add(item);
+            });
 		}
 
 		public void SaveDump()
