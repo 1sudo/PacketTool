@@ -5,6 +5,8 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows;
+using PacketTool.Views;
+using SwgPacketAnalyzer.nodes;
 
 namespace PacketTool.ViewModels;
 
@@ -18,6 +20,7 @@ public class MainWindowViewModel : ViewModelBase
     public IRelayCommand? ToolStripMenuSaveButton { get; }
     public IRelayCommand? ToolStripMenuExitButton { get; }
     public IRelayCommand? ClearButton { get; }
+    public IRelayCommand? EditPacketButton { get; }
 
     public MainWindowViewModel()
     {
@@ -27,6 +30,7 @@ public class MainWindowViewModel : ViewModelBase
         ToolStripMenuSaveButton = new RelayCommand(SaveDump);
         ToolStripMenuExitButton = new RelayCommand(Exit);
         ClearButton = new RelayCommand(Clear);
+        EditPacketButton = new RelayCommand(EditPacket);
         BreakdownTreeViewItems = new ObservableCollection<TreeViewItem>();
         MasterTreeViewItems = new ObservableCollection<TreeViewItem>();
         ErrorTreeViewItems = new ObservableCollection<TreeViewItem>();
@@ -120,6 +124,13 @@ public class MainWindowViewModel : ViewModelBase
         PacketViewText = "";
         BreakDownViewText = "";
         Model.packetHandler.Clear();
+    }
+
+    private void EditPacket()
+    {
+        SwgPacket gamePacket = ((SwgPacketTreeNode)Model.selectedNode).getGamePacket();
+        PacketEditor packetEditor = new(gamePacket);
+        packetEditor.ShowDialog();
     }
 
     void Exit()

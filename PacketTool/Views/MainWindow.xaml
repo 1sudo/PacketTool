@@ -32,8 +32,8 @@
                 <MenuItem Command="{Binding ToolStripMenuExitButton}" Header="_Exit"/>
             </MenuItem>
             <MenuItem Header="_Tools">
-                <MenuItem Header="_Update"/>
                 <MenuItem Header="_Options"/>
+                <MenuItem Command="{Binding EditPacketButton}" Header="_Edit Packet"></MenuItem>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About..."/>
