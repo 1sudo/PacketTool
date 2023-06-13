@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:PacketTool.Models"
         mc:Ignorable="d"
         Title="PacketEditor" Style="{DynamicResource CustomWindowStyle}"
         MinHeight="725" MaxHeight="725"
-        MinWidth="1030" MaxWidth="1030" WindowStartupLocation="CenterScreen">
+        MinWidth="1030" MaxWidth="1030" WindowStartupLocation="CenterScreen" Initialized="PacketEditor_OnInitialized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -23,42 +22,67 @@
                 <ColumnDefinition Width="140" />
             </Grid.ColumnDefinitions>
             
-            <TextBox Text="{Binding LineNumbersTextBox}" Grid.Row="0" Grid.Column="0" />
-            <TextBox Text="{Binding HexEditorTextBox}" Grid.Row="0" Grid.Column="1" />
-            <TextBox Text="{Binding AsciiEditorTextBox}" Grid.Row="0" Grid.Column="2" />
-            <TextBox Text="{Binding BreakdownTextBox}" Grid.Row="0" Grid.Column="3" />
-            <ListBox ItemsSource="{Binding BreakdownListBox}" Grid.Row="0" Grid.Column="4" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <StackPanel Grid.Row="0" Grid.ColumnSpan="5" Orientation="Horizontal">
+                <Menu>
+                    <MenuItem Header="_Types">
+                        <MenuItem IsEnabled="{Binding ByteMenuStripEnabled}" Header="_Byte" />
+                        <MenuItem IsEnabled="{Binding ShortMenuStripEnabled}" Header="_Short" />
+                        <MenuItem IsEnabled="{Binding IntMenuStripEnabled}" Header="_Int" />
+                        <MenuItem IsEnabled="{Binding FloatMenuStripEnabled}" Header="_Float" />
+                        <MenuItem IsEnabled="{Binding LongMenuStripEnabled}" Header="_Long" />
+                        <MenuItem IsEnabled="{Binding AsciiMenuStripEnabled}" Header="_Ascii" />
+                        <MenuItem IsEnabled="{Binding UnicodeMenuStripEnabled}" Header="_Unicode" />
+                    </MenuItem>
+                </Menu>
+                <Menu>
+                    <MenuItem Header="_Actions">
+                        <MenuItem Header="_Edit" />
+                        <MenuItem Header="_Delete" />
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+            
+            <RichTextBox x:Name="LineNumbersRichTextBox"  Grid.Row="1" Grid.Column="0" />
+            <RichTextBox x:Name="HexEditorRichTextBox" Grid.Row="1" Grid.Column="1" />
+            <RichTextBox x:Name="AsciiEditorRichTextBox" Grid.Row="1" Grid.Column="2" />
+            <RichTextBox x:Name="BreakdownRichTextBox" Grid.Row="1" Grid.Column="3" />
+            <ListBox SelectedIndex="{Binding BreakdownSelectedIndex}" ItemsSource="{Binding BreakdownListBox}" Grid.Row="0" Grid.Column="4" />
         </Grid>
 
-        <UniformGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Columns="4" Margin="5">
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">byte</Button>
+        <UniformGrid Grid.Row="1" Grid.Column="0" Columns="4" Margin="5">
+            <TextBox Text="{Binding ByteTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding ByteButton}" IsEnabled="{Binding ByteButtonEnabled}" Margin="3">byte</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">ascii</Button>
+            <TextBox Text="{Binding AsciiTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding AsciiButton}" IsEnabled="{Binding AsciiButtonEnabled}" Margin="3">ascii</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">short</Button>
+            <TextBox Text="{Binding ShortTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding ShortButton}" IsEnabled="{Binding ShortButtonEnabled}" Margin="3">short</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">unicode</Button>
+            <TextBox Text="{Binding UnicodeTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding UnicodeButton}" IsEnabled="{Binding UnicodeButtonEnabled}" Margin="3">unicode</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">int</Button>
+            <TextBox Text="{Binding IntTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding IntButton}" IsEnabled="{Binding IntButtonEnabled}" Margin="3">int</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">float</Button>
+            <TextBox Text="{Binding FloatTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding FloatButton}" IsEnabled="{Binding FloatButtonEnabled}" Margin="3">float</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">long</Button>
+            <TextBox Text="{Binding LongTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding LongButton}" IsEnabled="{Binding LongButtonEnabled}" Margin="3">long</Button>
             
-            <TextBox Margin="3"></TextBox>
-            <Button Margin="3">crc</Button>
+            <TextBox Text="{Binding CrcTextBox}" Margin="3"></TextBox>
+            <Button Command="{Binding CrcButton}" IsEnabled="{Binding CrcButtonEnabled}" Margin="3">crc</Button>
             <TextBlock></TextBlock>
             
             <TextBlock Margin="3" VerticalAlignment="Center" TextAlignment="Right">Count</TextBlock>
             <ComboBox Margin="3"></ComboBox>
-            <Button Margin="3">Start List</Button>
+            <Button Command="{Binding ListButton}" Content="{Binding ListButtonText}" Margin="3"></Button>
         </UniformGrid>
     </Grid>
 </Window>
