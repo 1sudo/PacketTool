@@ -85,7 +85,7 @@ public class Variable
 	public bool ShowValue;
 	public bool ShowInHex;
 	private bool complete;
-	public int listid = -1;
+	public int listId = -1;
 	public int listindex = -1;
 	public string currentvalue = "";
 }

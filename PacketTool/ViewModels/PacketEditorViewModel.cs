@@ -44,14 +44,13 @@ public class PacketEditorViewModel : ViewModelBase
     public static int HexLineLength = 48;
     public static int AsciiLineLength = 17;
     private int nextOffset;
-    private bool listenabled;
-    private int listid;
-    private int listindex;
+    private bool listEnabled;
+    private int listId;
+    private int listIndex;
     private bool blockSelectedIndexUpdate;
 
     public PacketEditorViewModel(SwgPacket packet)
     {
-        // OnRichTextBox += SetRichTextBox;
         Packet = packet;
         ActivePacket = new SwgPacket(packet, 0);
         UpdateWindow(packet);
@@ -66,25 +65,6 @@ public class PacketEditorViewModel : ViewModelBase
         CrcButton = new RelayCommand(addCRC);
         ListButton = new RelayCommand(ListButtonClicked);
     }
-
-    /*void SetRichTextBox(RichTextBox textBox, RichTextBoxType type)
-    {
-        switch (type)
-        {
-            case RichTextBoxType.LineNumber: 
-                LineNumberRichTextBox = textBox;
-                break;
-            case RichTextBoxType.HexEditor:
-                HexEditorRichTextBox = textBox;
-                break;
-            case RichTextBoxType.AsciiEditor:
-                AsciiEditorRichTextBox = textBox;
-                break;
-            case RichTextBoxType.Breakdown:
-                BreakdownRichTextBox = textBox;
-                break;
-        }
-    }*/
 
     private void UpdateWindow(SwgPacket packet)
     {
@@ -110,20 +90,20 @@ public class PacketEditorViewModel : ViewModelBase
         int num3 = -1;
         bool flag = false;
         bool flag2 = false;
-        ArrayList arrayList = new ArrayList();
+        ArrayList arrayList = new();
         foreach (Variable variable in packetStruct.myStruct)
         {
             variable.index = num2;
             num2++;
-            if (!listenabled)
+            if (!listEnabled)
             {
-                if (num3 != variable.listid)
+                if (num3 != variable.listId)
                 {
-                    flag2 = (num3 != -1 && variable.listid > num3);
+                    flag2 = (num3 != -1 && variable.listId > num3);
                     if (variable.listindex != -1)
                     {
                         flag = true;
-                        num3 = variable.listid;
+                        num3 = variable.listId;
                     }
                     else
                     {
@@ -550,34 +530,14 @@ public class PacketEditorViewModel : ViewModelBase
 		}
 	}
 
-	private void byteButton_Click(object sender, EventArgs e)
-	{
-		this.AddByte();
-	}
-
-	private void byteToolStripMenuItem_Click(object sender, EventArgs e)
-	{
-		this.AddByte();
-	}
-
 	private void AddByte()
 	{
-		this.addVariable(this.nextOffset, 1, VariableType.Byte, ByteOrder.HostByte, "");
-	}
-
-	private void shortButton_Click(object sender, EventArgs e)
-	{
-		this.AddShort();
-	}
-
-	private void shortToolStripMenuItem_Click(object sender, EventArgs e)
-	{
-		this.AddShort();
+		addVariable(nextOffset, 1, VariableType.Byte, ByteOrder.HostByte, "");
 	}
 
 	private void AddShort()
 	{
-		this.addVariable(this.nextOffset, 2, VariableType.Short, ByteOrder.HostByte, "");
+		addVariable(this.nextOffset, 2, VariableType.Short, ByteOrder.HostByte, "");
 	}
 
 	private void ShortPreview(List<byte> bytes)
@@ -595,19 +555,9 @@ public class PacketEditorViewModel : ViewModelBase
 		return BitConverter.ToUInt16(bytes.ToArray(), 0);
 	}
 
-	private void intButton_Click(object sender, EventArgs e)
-	{
-		this.AddInt();
-	}
-
-	private void intToolStripMenuItem_Click(object sender, EventArgs e)
-	{
-		this.AddInt();
-	}
-
 	private void AddInt()
 	{
-		this.addVariable(this.nextOffset, 4, VariableType.Int, ByteOrder.HostByte, "");
+		addVariable(nextOffset, 4, VariableType.Int, ByteOrder.HostByte, "");
 	}
 
 	private void IntPreview(List<byte> bytes)
@@ -625,81 +575,64 @@ public class PacketEditorViewModel : ViewModelBase
 		return BitConverter.ToUInt32(bytes.ToArray(), 0);
 	}
 
-	private void floatButton_Click(object sender, EventArgs e)
-	{
-		this.AddFloat();
-	}
-
-	private void floatToolStripMenuItem_Click(object sender, EventArgs e)
-	{
-		this.AddFloat();
-	}
-
 	private void AddFloat()
 	{
-		this.addVariable(this.nextOffset, 4, VariableType.Float, ByteOrder.HostByte, "");
+		addVariable(nextOffset, 4, VariableType.Float, ByteOrder.HostByte, "");
 	}
 
 	private void AddLong()
 	{
-		this.addVariable(this.nextOffset, 8, VariableType.Long, ByteOrder.HostByte, "");
+		addVariable(nextOffset, 8, VariableType.Long, ByteOrder.HostByte, "");
 	}
 
 	private void addAscii()
 	{
-		this.addVariable(this.nextOffset, 2, VariableType.Ascii, ByteOrder.HostByte, "");
-	}
-
-	private void unicodeToolStripMenuItem_Click(object sender, EventArgs e)
-	{
-		this.addUnicode();
+		addVariable(nextOffset, 2, VariableType.Ascii, ByteOrder.HostByte, "");
 	}
 
 	private void addUnicode()
 	{
-		this.addVariable(this.nextOffset, 4, VariableType.Unicode, ByteOrder.HostByte, "");
+		addVariable(nextOffset, 4, VariableType.Unicode, ByteOrder.HostByte, "");
 	}
 
 	private void addCRC()
 	{
-		this.addVariable(this.nextOffset, 4, VariableType.Int, ByteOrder.HostByte, "");
+		addVariable(nextOffset, 4, VariableType.Int, ByteOrder.HostByte, "");
 	}
 
 	private void addVariable(int offset, int length, VariableType variableType, ByteOrder byteOrder, string description = "")
 	{
-		if (description.Equals("n/a"))
+		if (description.Equals("N/A"))
 		{
 			description = "";
 		}
-		VariableEditor variableEditor = new VariableEditor(offset, length, variableType, byteOrder, description);
+		VariableEditor variableEditor = new(offset, length, variableType, byteOrder, description);
 		
 		bool? dialogResult = variableEditor.ShowDialog();
-		if (dialogResult == true && variableEditor.MyVariable != null && ActivePacket != null)
+		if (dialogResult != true || variableEditor.PacketVariable == null || ActivePacket == null) return;
+		
+		try
 		{
-			try
+			if (listEnabled)
 			{
-				if (this.listenabled)
-				{
-					variableEditor.MyVariable.listindex = this.listindex;
-					this.listindex++;
-					variableEditor.MyVariable.listid = this.listid;
-				}
-				ActivePacket.myStruct.Add(variableEditor.MyVariable);
-				UpdateWindow(ActivePacket);
+				variableEditor.PacketVariable.listindex = listIndex;
+				listIndex++;
+				variableEditor.PacketVariable.listId = listId;
 			}
-			catch
-			{
-			}
+
+			ActivePacket.myStruct.Add(variableEditor.PacketVariable);
+			UpdateWindow(ActivePacket);
 		}
+		catch {}
 	}
 
 	void ListButtonClicked()
 	{
-		if (listenabled)
+		if (listEnabled)
 		{
-			listenabled = false;
+			listEnabled = false;
 			ListButtonText = "Start List";
-			listid = -1;
+			listId = -1;
 			return;
 		}
 		if (BreakdownSelectedIndex == -1)
@@ -707,10 +640,10 @@ public class PacketEditorViewModel : ViewModelBase
 			MessageBox.Show("Select an item to be the list counter from the right");
 			return;
 		}
-		this.listenabled = true;
+		listEnabled = true;
 		ListButtonText = "Stop List";
-		this.listid = ActivePacket.myStruct[BreakdownSelectedIndex].index;
-		this.listindex = 0;
+		this.listId = ActivePacket.myStruct[BreakdownSelectedIndex].index;
+		this.listIndex = 0;
 		int selected = BreakdownSelectedIndex;
 		string info = ActivePacket.myStruct[selected].currentvalue.ToString();
 		// comboBox1.Text = info;
@@ -795,30 +728,6 @@ public class PacketEditorViewModel : ViewModelBase
     private string _longTextBox;
     private string _crcTextBox;
     private string _listButtonText = "Start List";
-    
-    public string LineNumbersTextBox
-    {
-        get => _lineNumbersTextBox;
-        set => SetProperty(ref _lineNumbersTextBox, value);
-    }
-
-    public string HexEditorTextBox
-    {
-        get => _hexEditorTextbox;
-        set => SetProperty(ref _hexEditorTextbox, value);
-    }
-
-    public string AsciiEditorTextBox
-    {
-        get => _asciiEditorTextBox;
-        set => SetProperty(ref _asciiEditorTextBox, value);
-    }
-
-    public string BreakdownTextBox
-    {
-        get => _breakdownTextBox;
-        set => SetProperty(ref _breakdownTextBox, value);
-    }
 
     public ObservableCollection<string> BreakdownListBox
     {

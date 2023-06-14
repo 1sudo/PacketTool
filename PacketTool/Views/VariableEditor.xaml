@@ -4,9 +4,63 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:PacketTool.Views"
-        mc:Ignorable="d"
-        Title="VariableEditor" Height="450" Width="800">
+        mc:Ignorable="d" Style="{DynamicResource CustomWindowStyle}"
+        Title="VariableEditor" MinHeight="440" MinWidth="370"
+        MaxHeight="440" MaxWidth="370" WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="20" />
+        </Grid.ColumnDefinitions>
         
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <UniformGrid Columns="2" Margin="0 0 0 10">
+                <TextBlock>Name</TextBlock>
+                <TextBox Text="{Binding NameTextBox}"></TextBox>
+            </UniformGrid>
+            
+            <UniformGrid Columns="2" Margin="0 0 0 10">
+                <TextBlock>Description</TextBlock>
+                <TextBox Text="{Binding DescriptionTextBox}" Height="40"></TextBox>
+            </UniformGrid>
+            
+            <UniformGrid Columns="2" Margin="0 0 0 10">
+                <TextBlock>Notes</TextBlock>
+                <TextBox Text="{Binding NotesTextBox}" Height="135"></TextBox>
+            </UniformGrid>
+
+            <UniformGrid Columns="2" Margin="0 0 0 10">
+                <TextBlock>Type</TextBlock>
+                <ComboBox ItemsSource="{Binding TypeComboBoxCollection}" SelectedItem="{Binding TypeComboBoxSelectedItem}"></ComboBox>
+            </UniformGrid>
+            
+            <UniformGrid>
+                <TextBlock>Byte Order</TextBlock>
+                <ComboBox ItemsSource="{Binding ByteComboBoxSelection}" SelectedItem="{Binding ByteComboBoxSelectedItem}"></ComboBox>
+            </UniformGrid>
+            
+            <UniformGrid>
+                <CheckBox IsChecked="{Binding ShowValueCheckBoxChecked}">
+                    <TextBlock Margin="5 0 0 0">
+                        Show Value In Editor
+                    </TextBlock>
+                </CheckBox>
+                
+                <CheckBox IsChecked="{Binding CompleteCheckBoxChecked}">
+                    <TextBlock Margin="5 0 0 0">
+                        Complete
+                    </TextBlock>
+                </CheckBox>
+            </UniformGrid>
+            
+            <Button Command="{Binding SaveButton}">Save</Button>
+        </StackPanel>
     </Grid>
 </Window>

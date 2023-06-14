@@ -229,15 +229,15 @@ namespace SwgPacketAnalyzer
 				}
 				catch
 				{
-					variable.currentvalue = "n/a";
+					variable.currentvalue = "N/A";
 				}
-				if (num != variable.listid)
+				if (num != variable.listId)
 				{
-					flag2 = (num != -1 && variable.listid > num);
+					flag2 = (num != -1 && variable.listId > num);
 					if (variable.listindex != -1)
 					{
 						flag = true;
-						num = variable.listid;
+						num = variable.listId;
 					}
 					else
 					{
