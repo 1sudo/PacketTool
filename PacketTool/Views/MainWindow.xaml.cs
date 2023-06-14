@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Dark.Net;
 using PacketTool.Models;
 using PacketTool.ViewModels;
@@ -21,10 +18,13 @@ namespace PacketTool
             DataContext = new MainWindowViewModel();
         }
 
-        private void TreeViewItem_Click(object sender, MouseButtonEventArgs e)
+        private void TreeViewItem_Click(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            TreeViewItem treeViewItem = (TreeViewItem)sender;
-            MainWindowModel.OnNodeClicked(treeViewItem);
+            TreeViewItem? item = e.NewValue as TreeViewItem;
+
+            if (item is null) return;
+
+            MainWindowModel.OnNodeClicked(item);
         }
     }
 }

@@ -220,21 +220,24 @@ namespace SwgPacketAnalyzer.SwgPackets
 		{
 			if (this.PacketDisplay == null)
 			{
-				this.PacketDisplay = new List<string>();
-				this.PacketDisplay.Add(string.Concat(new object[]
-				{
-					"Packet : ",
-					this.packetNumber,
-					" Time: ",
-					this.time.Date.ToLocalTime().Hour.ToString("D2"),
-					":",
-					this.time.Date.ToLocalTime().Minute.ToString("D2"),
-					":",
-					this.time.Date.ToLocalTime().Second.ToString("D2"),
-					":",
-					this.time.MicroSeconds.ToString("D6")
-				}));
-				string text = (this.packetOrigin == PacketOrigin.Client) ? "(Client->Server)" : "(Server->Client)";
+                this.PacketDisplay = new List<string>
+                {
+                    string.Concat(new object[]
+                {
+                    "Packet : ",
+                    this.packetNumber
+					// TODO find out how to get time stamp from packet, or roll our own time stamp on packet arrival listener
+/*                    " Time: ",
+                    this.time.Date.ToLocalTime().Hour.ToString("D2"),
+                    ":",
+                    this.time.Date.ToLocalTime().Minute.ToString("D2"),
+                    ":",
+                    this.time.Date.ToLocalTime().Second.ToString("D2"),
+                    ":",
+                    this.time.MicroSeconds.ToString("D6")*/
+                })
+                };
+                string text = (this.packetOrigin == PacketOrigin.Client) ? "(Client->Server)" : "(Server->Client)";
 				this.PacketDisplay.Add(string.Concat(new object[]
 				{
 					this.sourceAddress,
