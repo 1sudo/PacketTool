@@ -25,9 +25,15 @@ public partial class PacketEditor : Window
 
     private void PacketEditor_OnInitialized(object? sender, EventArgs e)
     {
-        PacketEditorViewModel.OnRichTextBox?.Invoke(LineNumbersRichTextBox, RichTextBoxType.LineNumber);
+        PacketEditorViewModel.LineNumberRichTextBox = LineNumbersRichTextBox;
+        PacketEditorViewModel.AsciiEditorRichTextBox = AsciiEditorRichTextBox;
+        PacketEditorViewModel.HexEditorRichTextBox = HexEditorRichTextBox;
+        PacketEditorViewModel.BreakdownRichTextBox = BreakdownRichTextBox;
+        
+        
+        /*PacketEditorViewModel.OnRichTextBox?.Invoke(LineNumbersRichTextBox, RichTextBoxType.LineNumber);
         PacketEditorViewModel.OnRichTextBox?.Invoke(HexEditorRichTextBox, RichTextBoxType.HexEditor);
         PacketEditorViewModel.OnRichTextBox?.Invoke(AsciiEditorRichTextBox, RichTextBoxType.AsciiEditor);
-        PacketEditorViewModel.OnRichTextBox?.Invoke(BreakdownRichTextBox, RichTextBoxType.Breakdown);
+        PacketEditorViewModel.OnRichTextBox?.Invoke(BreakdownRichTextBox, RichTextBoxType.Breakdown);*/
     }
 }

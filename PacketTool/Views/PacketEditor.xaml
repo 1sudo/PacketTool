@@ -47,11 +47,11 @@
                 </Menu>
             </StackPanel>
             
-            <RichTextBox x:Name="LineNumbersRichTextBox"  Grid.Row="1" Grid.Column="0" />
-            <RichTextBox x:Name="HexEditorRichTextBox" Grid.Row="1" Grid.Column="1" />
-            <RichTextBox x:Name="AsciiEditorRichTextBox" Grid.Row="1" Grid.Column="2" />
-            <RichTextBox x:Name="BreakdownRichTextBox" Grid.Row="1" Grid.Column="3" />
-            <ListBox SelectedIndex="{Binding BreakdownSelectedIndex}" ItemsSource="{Binding BreakdownListBox}" Grid.Row="0" Grid.Column="4" />
+            <RichTextBox Background="#222" Foreground="White" x:Name="LineNumbersRichTextBox"  Grid.Row="1" Grid.Column="0" />
+            <RichTextBox Background="#222" Foreground="White" x:Name="HexEditorRichTextBox" Grid.Row="1" Grid.Column="1" />
+            <RichTextBox Background="#222" Foreground="White" x:Name="AsciiEditorRichTextBox" Grid.Row="1" Grid.Column="2" />
+            <RichTextBox Background="#222" Foreground="White" x:Name="BreakdownRichTextBox" Grid.Row="1" Grid.Column="3" />
+            <ListBox SelectedIndex="{Binding BreakdownSelectedIndex}" ItemsSource="{Binding BreakdownListBox}" Grid.Row="1" Grid.Column="4" />
         </Grid>
 
         <UniformGrid Grid.Row="1" Grid.Column="0" Columns="4" Margin="5">
