@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
@@ -14,14 +12,10 @@ using PacketTool.Models;
 using PacketTool.Views;
 using SwgPacketAnalyzer;
 using Color = System.Drawing.Color;
+using MessageBox = System.Windows.MessageBox;
+using RichTextBox = System.Windows.Controls.RichTextBox;
 
 namespace PacketTool.ViewModels;
-
-public enum ContentPosition
-{
-    Start = 0,
-    End = 1
-}
 
 public class PacketEditorViewModel : ViewModelBase
 {
@@ -54,6 +48,8 @@ public class PacketEditorViewModel : ViewModelBase
         Packet = packet;
         ActivePacket = new SwgPacket(packet, 0);
         UpdateWindow(packet);
+
+        HexEditorRichTextBox.SelectionChanged += OnHexEditorTextSelected; 
 
         ByteButton = new RelayCommand(AddByte);
         AsciiButton = new RelayCommand(addAscii);
@@ -122,7 +118,7 @@ public class PacketEditorViewModel : ViewModelBase
                         foreach (object obj in arrayList)
                         {
                             Variable myvar = (Variable)obj;
-                            this.HighlightPacket(packetStruct, myvar, num, i == 0);
+                            HighlightPacket(packetStruct, myvar, num, i == 0);
                             num += variable.getLength();
                         }
                     }
@@ -145,7 +141,7 @@ public class PacketEditorViewModel : ViewModelBase
                 foreach (object obj2 in arrayList)
                 {
                     Variable variable2 = (Variable)obj2;
-                    this.HighlightPacket(packetStruct, variable2, num, j == 0);
+                    HighlightPacket(packetStruct, variable2, num, j == 0);
                     num += variable2.getLength();
                     num2++;
                 }
@@ -197,15 +193,15 @@ public class PacketEditorViewModel : ViewModelBase
         Color color;
         if (myVar.isComplete())
         {
-            color = Color.LightGreen;
+            color = Color.DarkGreen;
         }
         else
         {
-            color = Color.LightGray;
+            color = Color.DimGray;
         }
         if (myVar.index == BreakdownSelectedIndex)
         {
-            color = Color.Yellow;
+            color = Color.DarkMagenta;
         }
         myVar.currentvalue = text2;
         HighlightText(currentOffset, myVar.getLength(), color);
@@ -213,19 +209,28 @@ public class PacketEditorViewModel : ViewModelBase
     
     private void HighlightText(int offset, int length, Color color)
     {
-        int asciiLocationFromDataOffset = this.GetAsciiLocationFromDataOffset(offset);
-        int asciiLengthFromDataOffset = this.GetAsciiLengthFromDataOffset(offset, length);
+        int asciiLocationFromDataOffset = GetAsciiLocationFromDataOffset(offset);
+        int asciiLengthFromDataOffset = GetAsciiLengthFromDataOffset(offset, length);
         
-        SetTextSelection(AsciiEditorRichTextBox, asciiLocationFromDataOffset, asciiLengthFromDataOffset);
-        AsciiEditorRichTextBox.SelectionBrush = ConvertColor(color);
+        SetRange(AsciiEditorRichTextBox, asciiLocationFromDataOffset, asciiLengthFromDataOffset, ConvertColor(color));
+
+        int hexLocationFromDataOffset = GetHexLocationFromDataOffset(offset);
+        int hexLengthFromDataOffset = GetHexLengthFromDataOffset(offset, length);
         
-        int hexLocationFromDataOffset = this.GetHexLocationFromDataOffset(offset);
-        int hexLengthFromDataOffset = this.GetHexLengthFromDataOffset(offset, length);
-        
-        SetTextSelection(HexEditorRichTextBox, hexLocationFromDataOffset, hexLengthFromDataOffset);
-        HexEditorRichTextBox.SelectionBrush = ConvertColor(color);
-        SetTextSelection(HexEditorRichTextBox, 0, 0);
-        SetTextSelection(AsciiEditorRichTextBox, 0, 0);
+        SetRange(HexEditorRichTextBox, hexLocationFromDataOffset, hexLengthFromDataOffset, ConvertColor(color));
+
+        SetRange(HexEditorRichTextBox, 0, 0);
+        SetRange(AsciiEditorRichTextBox, 0, 0);
+    }
+    
+    void SetRange(RichTextBox textbox, int offset, int offset2, SolidColorBrush? color = null)
+    {
+	    TextPointer startPointer = textbox.Document.ContentStart.GetPositionAtOffset(offset, LogicalDirection.Forward);
+	    TextPointer endPointer = textbox.Document.ContentStart.GetPositionAtOffset(offset2, LogicalDirection.Forward);
+	    TextRange textRange = new TextRange(startPointer, endPointer);
+	    textbox.Selection.Select(startPointer, endPointer);
+	    if (color is null) return;
+	    textRange.ApplyPropertyValue(TextElement.BackgroundProperty, color);
     }
     
     private int GetAsciiLocation(int offset)
@@ -237,8 +242,8 @@ public class PacketEditorViewModel : ViewModelBase
 
     private int GetAsciiLength(int offset, int length)
     {
-        int asciiLocation = this.GetAsciiLocation(offset);
-        int asciiLocation2 = this.GetAsciiLocation(offset + length);
+        int asciiLocation = GetAsciiLocation(offset);
+        int asciiLocation2 = GetAsciiLocation(offset + length);
         return asciiLocation2 - asciiLocation;
     }
 
@@ -257,8 +262,8 @@ public class PacketEditorViewModel : ViewModelBase
 
     private int GetHexLengthFromDataOffset(int offset, int length)
     {
-        int hexLocationFromDataOffset = this.GetHexLocationFromDataOffset(offset);
-        int hexLocationFromDataOffset2 = this.GetHexLocationFromDataOffset(offset + length);
+        int hexLocationFromDataOffset = GetHexLocationFromDataOffset(offset);
+        int hexLocationFromDataOffset2 = GetHexLocationFromDataOffset(offset + length);
         return hexLocationFromDataOffset2 - hexLocationFromDataOffset;
     }
 
@@ -269,12 +274,12 @@ public class PacketEditorViewModel : ViewModelBase
 
     private int GetAsciiLengthFromDataOffset(int offset, int length)
     {
-        int asciiLocationFromDataOffset = this.GetAsciiLocationFromDataOffset(offset);
-        int asciiLocationFromDataOffset2 = this.GetAsciiLocationFromDataOffset(offset + length);
+        int asciiLocationFromDataOffset = GetAsciiLocationFromDataOffset(offset);
+        int asciiLocationFromDataOffset2 = GetAsciiLocationFromDataOffset(offset + length);
         return asciiLocationFromDataOffset2 - asciiLocationFromDataOffset;
     }
 
-    private SolidColorBrush ConvertColor(System.Drawing.Color color)
+    private SolidColorBrush ConvertColor(Color color)
     {
         return new SolidColorBrush(new System.Windows.Media.Color
         {
@@ -285,27 +290,6 @@ public class PacketEditorViewModel : ViewModelBase
         });
     }
 
-    void SetTextSelection(RichTextBox textbox, int offset, int offset2)
-    {
-	    TextPointer myTextPointer1 = textbox.Document.ContentStart.GetPositionAtOffset(offset);  
-
-        if (myTextPointer1 == null)
-        {
-            SetTextSelection(textbox, (offset - 1), offset2);
-            return;
-        }
-
-	    TextPointer myTextPointer2 = textbox.Document.ContentStart.GetPositionAtOffset(offset2);
-
-        if (myTextPointer2 == null) 
-        {
-            SetTextSelection(textbox, offset, (offset2 - 1));
-            return;
-        }
-
-        textbox.Selection.Select(myTextPointer1, myTextPointer2);
-    }
-    
     private void enableButtons()
     {
 	    ByteButtonEnabled = true;
@@ -342,12 +326,12 @@ public class PacketEditorViewModel : ViewModelBase
     
     private void PreviewVariables(int offset)
     {
-        this.enableButtons();
-        this.clearText();
+        enableButtons();
+        clearText();
         try
         {
             string hexEditorText = GetAllText(HexEditorRichTextBox);
-            string text = hexEditorText.Trim().Replace("\n", "").Substring(offset * 3);
+            string text = hexEditorText.Trim().Replace("\n", "").Replace("\r", "").Substring(offset * 3);
             if (!string.IsNullOrEmpty(text))
             {
                 string[] array = text.Split(new char[]
@@ -361,60 +345,60 @@ public class PacketEditorViewModel : ViewModelBase
                 }
                 try
                 {
-                    this.BytePreview(list.GetRange(0, 1));
+                    BytePreview(list.GetRange(0, 1));
                 }
                 catch
                 {
                 }
                 try
                 {
-                    this.ShortPreview(list.GetRange(0, 2));
+                    ShortPreview(list.GetRange(0, 2));
                 }
                 catch
                 {
                 }
                 try
                 {
-                    this.IntPreview(list.GetRange(0, 4));
+                    IntPreview(list.GetRange(0, 4));
                 }
                 catch
                 {
                 }
                 try
                 {
-                    this.FloatPreview(list.GetRange(0, 4));
+                    FloatPreview(list.GetRange(0, 4));
                 }
                 catch
                 {
                 }
                 try
                 {
-                    this.LongPreview(list.GetRange(0, 8));
+                    LongPreview(list.GetRange(0, 8));
                 }
                 catch
                 {
                 }
                 try
                 {
-                    this.CrcPreview(list.GetRange(0, 4));
+                    CrcPreview(list.GetRange(0, 4));
                 }
                 catch
                 {
                 }
-                int num = (int)this.getShort(list.GetRange(0, 2));
+                int num = (int)getShort(list.GetRange(0, 2));
                 if (num > 0 && num <= list.Count - 2)
                 {
-                    this.AsciiPreview(list.GetRange(2, num));
+                    AsciiPreview(list.GetRange(2, num));
                 }
                 else
                 {
 	                AsciiButtonEnabled = false;
 	                AsciiMenuStripEnabled = false;
                 }
-                num = (int)this.getInt(list.GetRange(0, 4));
+                num = (int)getInt(list.GetRange(0, 4));
                 if (num > 0 && num <= list.Count - 4)
                 {
-                    this.UnicodePreview(list.GetRange(4, num * 2));
+                    UnicodePreview(list.GetRange(4, num * 2));
                 }
                 else
                 {
@@ -439,7 +423,39 @@ public class PacketEditorViewModel : ViewModelBase
 
         return sb.ToString();
     }
-    
+
+    void OnHexEditorTextSelected(object sender, RoutedEventArgs e)
+    {
+        if (sender is not RichTextBox textbox) return;
+        TextRange textRange = new TextRange(textbox.Selection.Start, textbox.Selection.End);
+        string selectedText = textRange.Text.Trim();
+        if (string.IsNullOrEmpty(selectedText)) return;
+        List<string> hexValuesSplit = selectedText.Split(' ').ToList();
+
+        List<byte> result = new();
+
+        for (int i = 0; i < hexValuesSplit.Count; i++)
+        {
+	        // Ensure each hex value has exactly two characters.
+	        if(hexValuesSplit[i].Length != 2) continue;
+
+	        try
+	        {
+		        result.Add(Convert.ToByte(hexValuesSplit[i], 16));
+	        }
+	        catch (Exception) { }
+        }
+
+        AsciiPreview(result);
+        UnicodePreview(result);
+        BytePreview(result);
+        IntPreview(result);
+        FloatPreview(result);
+        LongPreview(result);
+        ShortPreview(result);
+        CrcPreview(result);
+    }
+
     private void UnicodePreview(List<byte> bytes)
 	{
 		if (bytes.Count >= 4)
@@ -450,7 +466,7 @@ public class PacketEditorViewModel : ViewModelBase
 			for (int i = 0; i < bytes.Count; i += 2)
 			{
 				char c = Convert.ToChar(bytes[i]);
-				if (this.isValidChar(c))
+				if (isValidChar(c))
 				{
 					text += c;
 				}
@@ -469,7 +485,7 @@ public class PacketEditorViewModel : ViewModelBase
 			for (int i = 0; i < bytes.Count; i++)
 			{
 				char c = Convert.ToChar(bytes[i]);
-				if (this.isValidChar(c))
+				if (isValidChar(c))
 				{
 					text += c;
 				}
@@ -482,7 +498,7 @@ public class PacketEditorViewModel : ViewModelBase
 	{
 		if (bytes.Count >= 4)
 		{
-			string text = MainWindowModel.CrcLookup(this.getInt(bytes));
+			string text = MainWindowModel.CrcLookup(getInt(bytes));
 			if (!string.IsNullOrEmpty(text))
 			{
 				CrcButtonEnabled = true;
@@ -537,7 +553,7 @@ public class PacketEditorViewModel : ViewModelBase
 
 	private void AddShort()
 	{
-		addVariable(this.nextOffset, 2, VariableType.Short, ByteOrder.HostByte, "");
+		addVariable(nextOffset, 2, VariableType.Short, ByteOrder.HostByte, "");
 	}
 
 	private void ShortPreview(List<byte> bytes)
@@ -642,10 +658,10 @@ public class PacketEditorViewModel : ViewModelBase
 		}
 		listEnabled = true;
 		ListButtonText = "Stop List";
-		this.listId = ActivePacket.myStruct[BreakdownSelectedIndex].index;
-		this.listIndex = 0;
+		listId = ActivePacket.myStruct[BreakdownSelectedIndex].index;
+		listIndex = 0;
 		int selected = BreakdownSelectedIndex;
-		string info = ActivePacket.myStruct[selected].currentvalue.ToString();
+		string info = ActivePacket.myStruct[selected].currentvalue;
 		// comboBox1.Text = info;
 		UpdateWindow(ActivePacket);
 	}
@@ -687,21 +703,17 @@ public class PacketEditorViewModel : ViewModelBase
 			}
 			if (variable.index == BreakdownSelectedIndex)
 			{
-				Color yellow = Color.Yellow;
-				this.HighlightText(num, variable.getLength(), yellow);
-				this.blockSelectedIndexUpdate = false;
+				Color color = Color.DarkMagenta;
+				HighlightText(num, variable.getLength(), color);
+				blockSelectedIndexUpdate = false;
 				return;
 			}
 			num += variable.getLength();
 			num2++;
 		}
-		this.blockSelectedIndexUpdate = false;
+		blockSelectedIndexUpdate = false;
 	}
     
-    private string _lineNumbersTextBox;
-    private string _hexEditorTextbox;
-    private string _asciiEditorTextBox;
-    private string _breakdownTextBox;
     private ObservableCollection<string> _breakdownListBox = new();
     private int _breakdownSelectedIndex;
     private bool _byteMenuStripEnabled;
@@ -742,8 +754,7 @@ public class PacketEditorViewModel : ViewModelBase
         {
 	        SetProperty(ref _breakdownSelectedIndex, value);
 	        OnSelectedIndexChanged();
-        } 
-	        
+        }
     }
 
     public bool ByteMenuStripEnabled
